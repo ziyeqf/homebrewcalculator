@@ -1,3 +1,3 @@
-module github.com/ziyeqf/homebrewcaculator
+module github.com/ziyeqf/homebrewcalculator
 
 go 1.20

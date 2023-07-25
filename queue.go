@@ -1,4 +1,4 @@
-package homebrewcaculator
+package homebrewcalculator
 
 type queue struct {
 	Head *node

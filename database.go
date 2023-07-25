@@ -1,4 +1,4 @@
-package homebrewcaculator
+package homebrewcalculator
 
 import "context"
 

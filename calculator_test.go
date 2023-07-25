@@ -1,4 +1,4 @@
-package homebrewcaculator_test
+package homebrewcalculator_test
 
 import (
 	"context"
@@ -6,36 +6,36 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/ziyeqf/homebrewcaculator"
+	"github.com/ziyeqf/homebrewcalculator"
 )
 
 type MockDBClient struct {
-	MockData map[int]homebrewcaculator.CountInfo
+	MockData map[int]homebrewcalculator.CountInfo
 }
 
-func (m MockDBClient) Get(_ context.Context, idx int) (homebrewcaculator.CountInfo, error) {
+func (m MockDBClient) Get(_ context.Context, idx int) (homebrewcalculator.CountInfo, error) {
 	if idx < 0 {
-		return homebrewcaculator.CountInfo{
+		return homebrewcalculator.CountInfo{
 			Count: 0,
 		}, nil
 	}
 	if idx >= len(m.MockData) {
-		return homebrewcaculator.CountInfo{
+		return homebrewcalculator.CountInfo{
 			Count: -1,
 		}, nil
 	}
 	return m.MockData[idx], nil
 }
 
-func (m MockDBClient) Set(_ context.Context, idx int, data homebrewcaculator.CountInfo) error {
+func (m MockDBClient) Set(_ context.Context, idx int, data homebrewcalculator.CountInfo) error {
 	m.MockData[idx] = data
 	return nil
 }
 
 type testCase struct {
-	spans    []homebrewcaculator.Span
-	data     map[int]homebrewcaculator.CountInfo
-	expect   map[int]homebrewcaculator.CountInfo
+	spans    []homebrewcalculator.Span
+	data     map[int]homebrewcalculator.CountInfo
+	expect   map[int]homebrewcalculator.CountInfo
 	startIdx int
 }
 
@@ -61,11 +61,11 @@ func TestCalculator_Calc(t *testing.T) {
 		t.Run(
 			name, func(t *testing.T) {
 				ctx := context.TODO()
-				var mockDBClient homebrewcaculator.DatabaseClient = MockDBClient{
+				var mockDBClient homebrewcalculator.DatabaseClient = MockDBClient{
 					MockData: c.data,
 				}
 
-				calculator := homebrewcaculator.NewCalculator(c.spans, &mockDBClient, log.New(&testingWriter{t}, "", log.LstdFlags))
+				calculator := homebrewcalculator.NewCalculator(c.spans, &mockDBClient, log.New(&testingWriter{t}, "", log.LstdFlags))
 				err := calculator.Calc(ctx, c.startIdx)
 				if err != nil {
 					t.Errorf("unexpected error: %v", err)
@@ -79,33 +79,33 @@ func TestCalculator_Calc(t *testing.T) {
 }
 
 func case_todayCountRight() testCase {
-	foo := homebrewcaculator.CountInfo{
+	foo := homebrewcalculator.CountInfo{
 		Count: 0,
-		TotalCounts: map[homebrewcaculator.Span]int{
+		TotalCounts: map[homebrewcalculator.Span]int{
 			2: 0,
 		},
 	}
 
 	return testCase{
-		spans: []homebrewcaculator.Span{2},
-		data: map[int]homebrewcaculator.CountInfo{
+		spans: []homebrewcalculator.Span{2},
+		data: map[int]homebrewcalculator.CountInfo{
 			0: foo,
 			1: foo,
 			2: foo,
 			3: {
 				Count: -1,
-				TotalCounts: map[homebrewcaculator.Span]int{
+				TotalCounts: map[homebrewcalculator.Span]int{
 					2: 3,
 				},
 			},
 		},
-		expect: map[int]homebrewcaculator.CountInfo{
+		expect: map[int]homebrewcalculator.CountInfo{
 			0: foo,
 			1: foo,
 			2: foo,
 			3: {
 				Count: 3,
-				TotalCounts: map[homebrewcaculator.Span]int{
+				TotalCounts: map[homebrewcalculator.Span]int{
 					2: 3,
 				},
 			},
@@ -115,9 +115,9 @@ func case_todayCountRight() testCase {
 }
 
 func case_todayCountLeft() testCase {
-	foo := homebrewcaculator.CountInfo{
+	foo := homebrewcalculator.CountInfo{
 		Count: 0,
-		TotalCounts: map[homebrewcaculator.Span]int{
+		TotalCounts: map[homebrewcalculator.Span]int{
 			2: 0,
 			5: 0,
 			8: 0,
@@ -125,33 +125,33 @@ func case_todayCountLeft() testCase {
 	}
 
 	return testCase{
-		spans: []homebrewcaculator.Span{2},
-		data: map[int]homebrewcaculator.CountInfo{
+		spans: []homebrewcalculator.Span{2},
+		data: map[int]homebrewcalculator.CountInfo{
 			0: foo,
 			1: foo,
 			2: {
 				Count:       -1,
-				TotalCounts: map[homebrewcaculator.Span]int{},
+				TotalCounts: map[homebrewcalculator.Span]int{},
 			},
 			3: {
 				Count: 2,
-				TotalCounts: map[homebrewcaculator.Span]int{
+				TotalCounts: map[homebrewcalculator.Span]int{
 					2: 3,
 				},
 			},
 		},
-		expect: map[int]homebrewcaculator.CountInfo{
+		expect: map[int]homebrewcalculator.CountInfo{
 			0: foo,
 			1: foo,
 			2: {
 				Count: 1,
-				TotalCounts: map[homebrewcaculator.Span]int{
+				TotalCounts: map[homebrewcalculator.Span]int{
 					2: 1,
 				},
 			},
 			3: {
 				Count: 2,
-				TotalCounts: map[homebrewcaculator.Span]int{
+				TotalCounts: map[homebrewcalculator.Span]int{
 					2: 3,
 				},
 			},
@@ -161,41 +161,41 @@ func case_todayCountLeft() testCase {
 }
 
 func case_todayTotalCountRight() testCase {
-	foo := homebrewcaculator.CountInfo{
+	foo := homebrewcalculator.CountInfo{
 		Count: 0,
-		TotalCounts: map[homebrewcaculator.Span]int{
+		TotalCounts: map[homebrewcalculator.Span]int{
 			2: 0,
 		},
 	}
 
 	return testCase{
-		spans: []homebrewcaculator.Span{2},
-		data: map[int]homebrewcaculator.CountInfo{
+		spans: []homebrewcalculator.Span{2},
+		data: map[int]homebrewcalculator.CountInfo{
 			0: foo,
 			1: foo,
 			2: {
 				Count: 1,
-				TotalCounts: map[homebrewcaculator.Span]int{
+				TotalCounts: map[homebrewcalculator.Span]int{
 					2: 1,
 				},
 			},
 			3: {
 				Count:       2,
-				TotalCounts: map[homebrewcaculator.Span]int{},
+				TotalCounts: map[homebrewcalculator.Span]int{},
 			},
 		},
-		expect: map[int]homebrewcaculator.CountInfo{
+		expect: map[int]homebrewcalculator.CountInfo{
 			0: foo,
 			1: foo,
 			2: {
 				Count: 1,
-				TotalCounts: map[homebrewcaculator.Span]int{
+				TotalCounts: map[homebrewcalculator.Span]int{
 					2: 1,
 				},
 			},
 			3: {
 				Count: 2,
-				TotalCounts: map[homebrewcaculator.Span]int{
+				TotalCounts: map[homebrewcalculator.Span]int{
 					2: 3,
 				},
 			},
@@ -205,41 +205,41 @@ func case_todayTotalCountRight() testCase {
 }
 
 func case_todayTotalCountLeft() testCase {
-	foo := homebrewcaculator.CountInfo{
+	foo := homebrewcalculator.CountInfo{
 		Count: 0,
-		TotalCounts: map[homebrewcaculator.Span]int{
+		TotalCounts: map[homebrewcalculator.Span]int{
 			2: 0,
 		},
 	}
 
 	return testCase{
-		spans: []homebrewcaculator.Span{2},
-		data: map[int]homebrewcaculator.CountInfo{
+		spans: []homebrewcalculator.Span{2},
+		data: map[int]homebrewcalculator.CountInfo{
 			0: foo,
 			1: foo,
 			2: {
 				Count:       1,
-				TotalCounts: map[homebrewcaculator.Span]int{},
+				TotalCounts: map[homebrewcalculator.Span]int{},
 			},
 			3: {
 				Count: 2,
-				TotalCounts: map[homebrewcaculator.Span]int{
+				TotalCounts: map[homebrewcalculator.Span]int{
 					2: 3,
 				},
 			},
 		},
-		expect: map[int]homebrewcaculator.CountInfo{
+		expect: map[int]homebrewcalculator.CountInfo{
 			0: foo,
 			1: foo,
 			2: {
 				Count: 1,
-				TotalCounts: map[homebrewcaculator.Span]int{
+				TotalCounts: map[homebrewcalculator.Span]int{
 					2: 1,
 				},
 			},
 			3: {
 				Count: 2,
-				TotalCounts: map[homebrewcaculator.Span]int{
+				TotalCounts: map[homebrewcalculator.Span]int{
 					2: 3,
 				},
 			},
@@ -249,26 +249,26 @@ func case_todayTotalCountLeft() testCase {
 }
 
 func case_CountRecursion() testCase {
-	foo := homebrewcaculator.CountInfo{
+	foo := homebrewcalculator.CountInfo{
 		Count: 0,
-		TotalCounts: map[homebrewcaculator.Span]int{
+		TotalCounts: map[homebrewcalculator.Span]int{
 			2: 0,
 			5: 0,
 		},
 	}
 
 	return testCase{
-		spans: []homebrewcaculator.Span{2, 5},
-		data: map[int]homebrewcaculator.CountInfo{
+		spans: []homebrewcalculator.Span{2, 5},
+		data: map[int]homebrewcalculator.CountInfo{
 			0: foo,
 			1: foo,
 			2: {
 				Count:       -1,
-				TotalCounts: map[homebrewcaculator.Span]int{},
+				TotalCounts: map[homebrewcalculator.Span]int{},
 			},
 			3: {
 				Count: 0,
-				TotalCounts: map[homebrewcaculator.Span]int{
+				TotalCounts: map[homebrewcalculator.Span]int{
 					2: 1,
 					5: 1,
 				},
@@ -277,32 +277,32 @@ func case_CountRecursion() testCase {
 			5: foo,
 			6: {
 				Count: 0,
-				TotalCounts: map[homebrewcaculator.Span]int{
+				TotalCounts: map[homebrewcalculator.Span]int{
 					2: 0,
 					5: 1,
 				},
 			},
 			7: {
 				Count: -1,
-				TotalCounts: map[homebrewcaculator.Span]int{
+				TotalCounts: map[homebrewcalculator.Span]int{
 					2: 2,
 					5: 2,
 				},
 			},
 		},
-		expect: map[int]homebrewcaculator.CountInfo{
+		expect: map[int]homebrewcalculator.CountInfo{
 			0: foo,
 			1: foo,
 			2: {
 				Count: 1,
-				TotalCounts: map[homebrewcaculator.Span]int{
+				TotalCounts: map[homebrewcalculator.Span]int{
 					2: 1,
 					5: 1,
 				},
 			},
 			3: {
 				Count: 0,
-				TotalCounts: map[homebrewcaculator.Span]int{
+				TotalCounts: map[homebrewcalculator.Span]int{
 					2: 1,
 					5: 1,
 				},
@@ -311,14 +311,14 @@ func case_CountRecursion() testCase {
 			5: foo,
 			6: {
 				Count: 0,
-				TotalCounts: map[homebrewcaculator.Span]int{
+				TotalCounts: map[homebrewcalculator.Span]int{
 					2: 0,
 					5: 1,
 				},
 			},
 			7: {
 				Count: 2,
-				TotalCounts: map[homebrewcaculator.Span]int{
+				TotalCounts: map[homebrewcalculator.Span]int{
 					2: 2,
 					5: 2,
 				},
